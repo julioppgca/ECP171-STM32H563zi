@@ -95,23 +95,63 @@ int main(void)
 
 	nextion_init();
 	nextion_set_page(0);
-	nextion_set_component_text("t0", "Valor atual de x:\n");
+
+	const int16_t x_lim_pos = 700, y_lim_pos = 450, speed = 5;
+	bool x_dir = true, y_dir = true;
+	uint16_t x_pos = 0, y_pos = 0;
+
+//	nextion_move_component("t0",rand()%x_lim_pos,rand()%y_lim_pos);
+	//HAL_Delay(500);
 
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	uint16_t x=0;
+
 	while (1)
 	{
-		nextion_set_component_value("n0", x++ % 255);
-		HAL_Delay(500);
-
-		if(nextion_ihm.touch_event.component_id == 0x04 && nextion_ihm.touch_event.event_type == 0x00)
+		if (x_dir)
 		{
-			x=0;
-			nextion_ihm.touch_event.component_id = -1;
+			x_pos++;
 		}
+		else
+		{
+			x_pos--;
+		}
+		if (y_dir)
+		{
+			y_pos++;
+		}
+		else
+		{
+			y_pos--;
+		}
+		if (x_pos > x_lim_pos)
+		{
+			x_dir = false;
+			nextion_set_component_color("t0", rand()%0xffff);
+		}
+
+		if (x_pos <= 0)
+		{
+			x_dir = true;
+			nextion_set_component_color("t0", rand()%0xffff);
+		}
+
+		if (y_pos > y_lim_pos)
+		{
+			y_dir = false;
+			nextion_set_component_color("t0", rand()%0xffff);
+		}
+
+		if (y_pos <= 0)
+		{
+			y_dir = true;
+			nextion_set_component_color("t0", rand()%0xffff);
+		}
+
+		nextion_move_component("t0", x_pos, y_pos);
+		HAL_Delay(speed);
 
 		/* USER CODE END WHILE */
 
